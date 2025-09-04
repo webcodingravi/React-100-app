@@ -54,7 +54,8 @@ const App=() => {
       <div className='min-h-screen bg-slate-100 animate__animated animate__fadeIn py-8'>
         <div className='md:w-10/12 pt-15 mx-auto md:px-0 px-6'>
           <div className='flex flex-col items-center gap-4'>
-            <h1 className='font-bold text-4xl mb-8 text-indigo-600'>📷 Image Gallery - {Query}</h1>
+            <h1 className='font-bold text-4xl text-indigo-600'>📷 Free Stock Image</h1>
+            <p className='max-w-2xl text-center text-slate-700 mb-8'>Find high-quality free stock images using the Pexels API. Perfect for frontend developers and designers to use in websites and apps.</p>
             <form onSubmit={search}>
               <input type="text" className='p-3 bg-white rounded-l-lg focus:outline-none md:w-[400px]' placeholder='Searh Image Here' />
               <button className='bg-gradient-to-br from-indigo-600 via-blue-500 to-indigo-500 p-3 md:px-8 focus:outline-none text-white rounded-r-lg cursor-pointer'>
