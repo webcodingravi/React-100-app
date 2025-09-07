@@ -64,7 +64,7 @@ const App=() => {
     return (
         <>
             <div className='bg-white min-h-screen'>
-                <div className='w-full mx-auto bg-[url(background.jpg)] min-h-screen pt-12 pb-48'>
+                <div className='w-full mx-auto bg-[url("./background.jpg")] min-h-screen pt-12 pb-48'>
                     <h1 className='text-3xl font-bold text-center'>
                         🤖 AI CHAT
                     </h1>
@@ -114,7 +114,7 @@ const App=() => {
                     }
 
 
-                    <div className='px-4 md:px-8 pb-5 fixed bottom-0 w-full bg-[url(background.jpg)]'>
+                    <div className='px-4 md:px-8 pb-5 fixed bottom-0 w-full bg-[url("./background.jpg")]'>
                         <form className='relative shadow-md backdrop-blur-md' onSubmit={createChat}>
                             <input type="text" value={message} placeholder='Chat with AI from here' className='bg-white w-full py-6 pl-6 pr-17 focus:outline-none rounded-full ' onChange={(e) => setMessage(e.target.value)} />
                             <button className='focus:outline-none bg-green-600 rounded-full text-white flex items-center justify-center cursor-pointer h-12 w-12 absolute top-3 right-4 hover:bg-green-700'>
