@@ -4,14 +4,15 @@ import { persist } from 'zustand/middleware'
 export const usePlanner=create(persist(
     ((set) => ({
         tasks: [],
+        filterTasks: [],
         addTask: (payload) => set((state) => ({
-            tasks: [...state.tasks, payload]
+            filterTasks: [...state.tasks, payload]
         })),
         deleteTask: (id) => set((state) => ({
-            tasks: state.tasks.filter((task) => task.id!==id)
+            filterTasks: state.tasks.filter((task) => task.id!==id)
         })),
         updateStatus: (id, status) => set((state) => ({
-            tasks: state.tasks.filter((task) => {
+            filterTasks: state.tasks.filter((task) => {
                 if (task.id===id)
                     task.status=status
 
@@ -20,12 +21,23 @@ export const usePlanner=create(persist(
             })
         })),
         deleteAllTask: () => set(() => ({
-            tasks: []
+            tasks: [],
+            filterTasks: [],
+
         })),
 
-        // dateSearch: (date) => set((state) => ({
-        //     tasks: state.tasks.filter((task) => task.createdAt.split('T')[0]===date)
-        // }))
+        dateSearch: (date) => set((state) => ({
+            filterTasks: state.tasks.filter((task) => task.createdAt===date)
+        })),
+
+        updateTasks: (payload) => set((state) => ({
+            filterTasks: state.tasks.map((task) =>
+                task.id===payload.id? { ...task, ...payload }:task
+            ),
+
+        }))
+
+
 
     })),
     { name: "Planner" }

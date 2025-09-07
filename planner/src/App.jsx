@@ -1,8 +1,8 @@
 import React from 'react'
 import '@ant-design/v5-patch-for-react-19';
 import toast, { Toaster } from 'react-hot-toast';
-import { Badge, Button, Card, DatePicker, Empty, Form, Input, Modal, Popconfirm, Select, Tag } from 'antd';
-import { Delete, Plus } from 'lucide-react'
+import { Badge, Button, Card, Empty, Form, Input, Modal, Popconfirm, Select, Tag } from 'antd';
+import { Delete, Edit, Plus } from 'lucide-react'
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { usePlanner } from '../store/usePlanner';
@@ -13,20 +13,49 @@ const App=() => {
   const [form]=Form.useForm();
   const [open, setOpen]=useState(false);
   const [timer, setTimer]=useState(new Date().toLocaleTimeString())
-  const { tasks, addTask, deleteTask, updateStatus, deleteAllTask, dateSearch }=usePlanner();
-  // console.log(tasks[0].createdAt.split('T')[0])
+  const [createdAt, setCreatedAt]=useState('')
+  const [editId, setEditId]=useState(null)
+  const { tasks, filterTasks, addTask, deleteTask, updateStatus, deleteAllTask, dateSearch, updateTasks }=usePlanner();
 
 
-  const highestTasks=tasks.filter((item) => item.priority==="highest")
-  const mediumTasks=tasks.filter((item) => item.priority==="medium")
-  const lowestTasks=tasks.filter((item) => item.priority==="lowest")
+  //get data edit
+  const editTask=(task) => {
+    console.log(task)
+    setCreatedAt(task.createdAt)
+    setEditId(task.id);
+    form.setFieldsValue({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+    });
+  }
+
+  // update
+  const updateTask=(value) => {
+    value.createdAt=createdAt;
+    value.status="pending"
+    updateTasks(value)
+    handleClose()
+    toast.success("Task updated Successfully")
+
+  }
+
+
+
+  const highestTasks=filterTasks.filter((item) => item.priority==="highest")
+  const mediumTasks=filterTasks.filter((item) => item.priority==="medium")
+  const lowestTasks=filterTasks.filter((item) => item.priority==="lowest")
+
+
 
   const createTask=(value) => {
     value.status="pending"
     value.id=Date.now()
-    value.createdAt=new Date()
+    value.createdAt=createdAt;
     addTask(value)
     handleClose()
+    toast.success("Task Created Successfully")
   }
 
   const handleClose=() => {
@@ -57,14 +86,14 @@ const App=() => {
             <h1 className='text-2xl font-bold text-white md:block hidden'>{timer}</h1>
 
             {/* <DatePicker size='large' /> */}
-            <input type="date" className='cursor-pointer p-2 rounded-xl bg-white focus:outline-none' />
+            <input type="date" className='cursor-pointer p-2 rounded-xl bg-white focus:outline-none' onChange={(e) => dateSearch(e.target.value)} />
             <div className='flex gap-5'>
-              <button onClick={() => setOpen(true)} className='text-sm py-1 px-3 rounded bg-gradient-to-tr from-blue-600 via-blue-500 to-blue-600 flex gap-1 font-medium items-center py-2 hover:scale-105 transition-translate duration-300 focus:shadow-lg cursor-pointer text-white'>
+              <button onClick={() => setOpen(true)} className='text-sm  px-3 rounded bg-gradient-to-tr from-blue-600 via-blue-500 to-blue-600 flex gap-1 font-medium items-center py-2 hover:scale-105 transition-translate duration-300 focus:shadow-lg cursor-pointer text-white'>
                 <Plus className='w-4 h-4' />
                 Add Task
               </button>
               <Popconfirm title="Do you want to delete all tasks ?" onConfirm={() => deleteAllTask()}>
-                <button className='text-sm py-1 px-3 rounded bg-gradient-to-tr from-rose-600 via-red-500 to-rose-600 flex gap-1 font-medium items-center py-2 hover:scale-105 transition-translate duration-300 focus:shadow-lg cursor-pointer text-white'>
+                <button className='text-sm  px-3 rounded bg-gradient-to-tr from-rose-600 via-red-500 to-rose-600 flex gap-1 font-medium items-center py-2 hover:scale-105 transition-translate duration-300 focus:shadow-lg cursor-pointer text-white'>
                   <Delete className='w-4 h-4' />
                   Delete all Tasks
                 </button>
@@ -86,7 +115,7 @@ const App=() => {
                     <>
 
                       <Empty description="There is not task added as highest priority" />
-                      <button onClick={() => setOpen(true)} className='text-sm py-1 px-3 rounded bg-gradient-to-tr from-blue-600 via-blue-500 to-blue-600 flex gap-1 font-medium items-center mx-auto py-2 hover:scale-105 transition-translate duration-300 focus:shadow-lg cursor-pointer text-white mt-7'>
+                      <button onClick={() => setOpen(true)} className='text-sm  px-3 rounded bg-gradient-to-tr from-blue-600 via-blue-500 to-blue-600 flex gap-1 font-medium items-center mx-auto py-2 hover:scale-105 transition-translate duration-300 focus:shadow-lg cursor-pointer text-white mt-7'>
                         <Plus className='w-4 h-4' />
                         Add Task
                       </button>
@@ -118,12 +147,15 @@ const App=() => {
                             <Tag className='!bg-rose-500 !border-rose-500 !text-white'>Delete</Tag>
                           </Popconfirm>
                         </div>
-                        <Select size='small' placeholder="Change Status" onChange={(status) => updateStatus(item.id, status)}>
-                          <Select.Option value="pending">Pending</Select.Option>
-                          <Select.Option value="inProgress">inProgress</Select.Option>
-                          <Select.Option value="completed">Completed</Select.Option>
+                        <div className='flex gap-3 items-center'>
+                          <Edit size={16} className='text-gray-600' onClick={() => { setOpen(true), editTask(item) }} />
+                          <Select size='small' placeholder="Change Status" onChange={(status) => updateStatus(item.id, status)}>
+                            <Select.Option value="pending">Pending</Select.Option>
+                            <Select.Option value="inProgress">inProgress</Select.Option>
+                            <Select.Option value="completed">Completed</Select.Option>
 
-                        </Select>
+                          </Select>
+                        </div>
                       </div>
                       <label className='text-slate-600 text-xs flex mt-3'>{moment(item.createdAt).format('DD MMM YYYY hh:mm A')}</label>
                     </Card>
@@ -181,12 +213,16 @@ const App=() => {
                             <Tag className='!bg-rose-500 !border-rose-500 !text-white'>Delete</Tag>
                           </Popconfirm>
                         </div>
-                        <Select size='small' placeholder="Change Status" onChange={(status) => updateStatus(item.id, status)}>
-                          <Select.Option value="pending">Pending</Select.Option>
-                          <Select.Option value="inProgress">inProgress</Select.Option>
-                          <Select.Option value="completed">Completed</Select.Option>
 
-                        </Select>
+                        <div className='flex gap-3 items-center'>
+                          <Edit size={16} className='text-gray-600' onClick={() => { setOpen(true), editTask(item) }} />
+                          <Select size='small' placeholder="Change Status" onChange={(status) => updateStatus(item.id, status)}>
+                            <Select.Option value="pending">Pending</Select.Option>
+                            <Select.Option value="inProgress">inProgress</Select.Option>
+                            <Select.Option value="completed">Completed</Select.Option>
+
+                          </Select>
+                        </div>
                       </div>
                       <label className='text-slate-600 text-xs flex mt-3'>{moment(item.createdAt).format('DD MMM YYYY hh:mm A')}</label>
 
@@ -247,12 +283,15 @@ const App=() => {
                             <Tag className='!bg-rose-500 !border-rose-500 !text-white'>Delete</Tag>
                           </Popconfirm>
                         </div>
-                        <Select size='small' placeholder="Change Status" onChange={(status) => updateStatus(item.id, status)}>
-                          <Select.Option value="pending">Pending</Select.Option>
-                          <Select.Option value="inProgress">inProgress</Select.Option>
-                          <Select.Option value="completed">Completed</Select.Option>
+                        <div className='flex gap-3 items-center'>
+                          <Edit size={16} className='text-gray-600' onClick={() => { setOpen(true), editTask(item) }} />
+                          <Select size='small' placeholder="Change Status" onChange={(status) => updateStatus(item.id, status)}>
+                            <Select.Option value="pending">Pending</Select.Option>
+                            <Select.Option value="inProgress">inProgress</Select.Option>
+                            <Select.Option value="completed">Completed</Select.Option>
 
-                        </Select>
+                          </Select>
+                        </div>
                       </div>
                       <label className='text-slate-600 text-xs flex mt-3'>{moment(item.createdAt).format('DD MMM YYYY hh:mm A')}</label>
 
@@ -267,12 +306,19 @@ const App=() => {
         </section>
 
         <footer className='md:py-0  md:h-[60px] h-[70px] py-3 fixed bottom-0 left-0 w-full bg-gradient-to-r from-slate-900 via-slate-800 to-rose-900 flex md:flex-row flex-col items-center justify-between px-8' >
-          <h1 className='text-xl font-bold text-white'>Total Tasks - {tasks.length}</h1>
+          <div className='flex gap-3'>
+            <h1 className='text-xl font-bold text-white'>Total Tasks - {filterTasks.length}</h1>
+
+          </div>
           <a href="https://rkdesigner.epizy.com/" className='text-white hover:underline'>wwww.rkdesigner.epizy.com</a>
         </footer>
         <Modal open={open} footer={null} onCancel={handleClose} maskClosable={false}>
           <h1 className='text-lg font-medium mb-4'>New Task</h1>
-          <Form onFinish={createTask} form={form}>
+          <Form onFinish={editId? updateTask:createTask} form={form}>
+            <Form.Item name="id" size="large" hidden>
+              <Input />
+            </Form.Item>
+
             <Form.Item name="title" size="large" rules={[{ required: true }]} >
               <Input placeholder='Task name' />
             </Form.Item>
@@ -288,6 +334,8 @@ const App=() => {
                 <Select.Option value="lowest">Lowest</Select.Option>
               </Select>
             </Form.Item>
+
+            <input type="date" name='createdAt' value={createdAt} className='p-3 mb-5 border border-slate-200 rounded-lg' required onChange={(e) => setCreatedAt(e.target.value)} />
 
             <Form.Item>
               <Button htmlType='submit' type='primary' size='large'>Submit</Button>
