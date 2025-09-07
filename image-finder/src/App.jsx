@@ -66,7 +66,7 @@ const App=() => {
           </div>
           {
             photo.length===0&&
-            <h1 className='text-4xl font-bold text-center mt-8'>Search Result Not Found</h1>
+            <h1 className='text-2xl font-bold text-center mt-15 text-slate-500'>No results found. Try another keyword.</h1>
           }
           <div className='grid md:grid-cols-4 grid-cols-1 gap-8 mt-8'>
 
