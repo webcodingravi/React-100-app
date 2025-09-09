@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+@import "tailwindcss";
+
+* {
+  font-family: "Outfit", sans-serif;
+  scroll-behavior: smooth;
+}
+
+.custom-text-color input {
+  color: #fff !important;
+  /* for example: Tailwind’s gray-800 */
+}
+
+.custom-text-color input::placeholder {
+  color: #999494 !important;
+  /* example: Tailwind’s gray-500 */
+  opacity: 1;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10%;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #eb0e2c;
+  border-radius: 10%;
+}
