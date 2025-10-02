@@ -13,11 +13,8 @@ const App=() => {
     input.click()
     input.onchange=() => {
       const file=input.files[0]
-      console.log(file)
-      console.log(file)
       setFile(file)
       setOpen(true)
-
     }
 
   }
